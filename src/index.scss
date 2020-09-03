@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap');
+
+$bg-primary: #fafafa;
+$bg-secondary: rgba(199,199,199,0.5);
+$font-color: #000000;
+
+$font: 'Rubik', sans-serif;
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+
+    body{
+
+        font-family: $font;
+        color: $font-color;
+        width: 100%;
+
+        .container {
+    
+            .content-container {
+                max-width: 1024px;
+                margin: 20% auto;
+
+                .appointment-container {
+                    background-color: $bg-secondary;
+                    padding: 60px 48px;
+                    border-radius: 5px;
+
+                    h1 {
+                        font-weight: 500;
+                    }
+                }
+            }
+        }
+    }
+}
+
