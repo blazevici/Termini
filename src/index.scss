@@ -12,7 +12,7 @@ $link-color: rgba(199, 46, 220, 1);
 $font: 'Open Sans', sans-serif;
 
 * {
-    box-sizing: border-box;
+    box-sizing: border-box !important;
     padding: 0;
     margin: 0;
 
@@ -23,6 +23,7 @@ $font: 'Open Sans', sans-serif;
         color: $font-color;
         line-height: 1.5em;
         width: 100%;
+        overflow-x: hidden;
 
         .container {
             .content-container {
@@ -47,7 +48,7 @@ $font: 'Open Sans', sans-serif;
                             .time-item {
                                 display: inline-block;
                                 text-align: center;
-                                margin-right: 5px;
+                                margin-right: 0.5rem;
                             }
 
                             h4 {
@@ -58,7 +59,7 @@ $font: 'Open Sans', sans-serif;
 
                             select {
                                 width: 140px;
-                                padding: 0.75rem 1rem;
+                                padding: 0.7rem 1rem;
                                 border: 1px solid rgba(199, 199, 199, 1);
                                 border-radius: 3px;
                                 font-family: $font;
@@ -70,6 +71,7 @@ $font: 'Open Sans', sans-serif;
                             #colon {
                                 color: $font-secondary-color;
                                 font-weight: 700;
+                                margin-left: 4px;
                             }
                         }
                     }
@@ -80,7 +82,10 @@ $font: 'Open Sans', sans-serif;
                         top: 0;
                         padding: 2.5rem 2.5rem 0 0;
                         color: $font-secondary-color;
-                        cursor: pointer;
+                        
+                        .pointer {
+                            cursor: pointer;
+                        }
                     }
                 }
             }
