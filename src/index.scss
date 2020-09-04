@@ -1,10 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap');
+$fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 
-$bg-primary: #fafafa;
-$bg-secondary: rgba(199,199,199,0.5);
-$font-color: #000000;
+@import '~@fortawesome/fontawesome-free/css/all.css';
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap');
 
-$font: 'Rubik', sans-serif;
+$bg-primary: rgba(250, 250, 250, 1);
+$bg-secondary: rgba(199, 199, 199, 0.5);
+$font-color: rgba(0, 0, 0, 1);
+$font-secondary-color: rgba(120, 120, 120, 1);
+$link-color: rgba(199, 46, 220, 1);
+
+$font: 'Open Sans', sans-serif;
 
 * {
     box-sizing: border-box;
@@ -14,26 +19,91 @@ $font: 'Rubik', sans-serif;
     body{
 
         font-family: $font;
+        font-size: 16px;
         color: $font-color;
+        line-height: 1.5em;
         width: 100%;
 
         .container {
-    
             .content-container {
                 max-width: 1024px;
-                margin: 20% auto;
+                margin: 10rem auto;
 
-                .appointment-container {
-                    background-color: $bg-secondary;
-                    padding: 60px 48px;
-                    border-radius: 5px;
+                #appointments {
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 0;
 
-                    h1 {
-                        font-weight: 500;
+                    .appointment-container {
+                        background-color: $bg-secondary;
+                        padding: 3.5rem 2.5rem;
+                        border-radius: 5px;
+                        position: relative;
+
+
+                        .time-container {
+                            padding: 24px 0 0 0;
+
+                            .time-item {
+                                display: inline-block;
+                                text-align: center;
+                                margin-right: 5px;
+                            }
+
+                            h4 {
+                                font-weight: 600;
+                                color: $font-secondary-color;
+                                padding-bottom: 0.1rem;
+                            }
+
+                            select {
+                                width: 140px;
+                                padding: 0.75rem 1rem;
+                                border: 1px solid rgba(199, 199, 199, 1);
+                                border-radius: 3px;
+                                font-family: $font;
+                                color: $font-secondary-color;
+                                font-size: 0.95rem;
+                                font-weight: 600;
+                            }
+
+                            #colon {
+                                color: $font-secondary-color;
+                                font-weight: 700;
+                            }
+                        }
                     }
+
+                    #closeIcon {
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                        padding: 2.5rem 2.5rem 0 0;
+                        color: $font-secondary-color;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            ul li {
+                padding-bottom: 0.5rem;
+
+                p a {
+                    text-decoration: none;
+                    color: $link-color;
+                    transition: text-shadow .3s;
+                    cursor: pointer;
+                }
+
+                p a:hover {
+                    text-shadow: 0 0 .65px $link-color, 0 0 .65px $link-color;
                 }
             }
         }
     }
+}
+
+*:focus {
+    outline: none;
 }
 

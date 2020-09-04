@@ -205,7 +205,9 @@
     "vm-browserify": "^1.1.2"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.14.0",
     "css-loader": "^4.2.2",
+    "file-loader": "^6.1.0",
     "node-sass": "^4.14.1",
     "sass-loader": "^10.0.2",
     "style-loader": "^1.2.1",

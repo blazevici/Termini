@@ -12,9 +12,64 @@
         <div class="container">
 
             <div class="content-container">
-                <div class="appointment-container">
-                    <h1>Termin #1</h1>
-                </div>
+                <ul id="appointments">
+                    <li>
+                        <div class="appointment-container">
+                            
+                            <h1>Termin #1</h1>
+
+                            <div class="time-container">
+                                <div class="time-item">
+                                    <h4>Godina</h4>
+
+                                    <select id="time-years"></select>
+                                </div>
+                                
+                                <div class="time-item">
+                                    <h4>Mjesec</h4>
+
+                                    <select id="time-months">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="time-item">
+                                    <h4>Dan</h4>
+
+                                    <select id="time-days"></select>
+                                    <span id="colon">:</span>
+                                </div>
+                                
+                                <div class="time-item" style="margin-left: -3px;">
+                                    <h4>Početak</h4>
+
+                                    <select id="time-start"></select>
+                                </div>
+
+                                <div class="time-item">
+                                    <h4>Završetak</h4>
+
+                                    <select id="time-end"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <p><a id="addMore">Dodaj još jedan termin</a></p>
+                    </li>
+                </ul>
             </div>
 
         </div>
