@@ -97,17 +97,17 @@ $font: 'Open Sans', sans-serif;
 
             ul li {
                 padding-bottom: 0.5rem;
+            }
 
-                p a {
-                    text-decoration: none;
-                    color: $link-color;
-                    transition: text-shadow .3s;
-                    cursor: pointer;
-                }
+            p a {
+                text-decoration: none;
+                color: $link-color;
+                transition: text-shadow .3s;
+                cursor: pointer;
+            }
 
-                p a:hover {
-                    text-shadow: 0 0 .65px $link-color, 0 0 .65px $link-color;
-                }
+            p a:hover {
+                text-shadow: 0 0 .65px $link-color, 0 0 .65px $link-color;
             }
         }
     }

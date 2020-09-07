@@ -7,14 +7,13 @@ const moment = require('moment');
 
 $(document).ready(() => {
 
-    let counter = 1;
+    let counter;
     let dropdownYears = $("#year1 #time-years");
     let dropdownDays = $("#day1 #time-days");
     const currentYear = (new Date()).getFullYear();
 
     appendYears(dropdownYears, 2000, currentYear);
     getDays(1, currentYear, dropdownDays);
-
 
     async function getFile(file) {
 
@@ -37,7 +36,13 @@ $(document).ready(() => {
         let intervals = createHalfHourIntervals();
 
         clearOptions(timesDropdown);
-        appendTimes(timesDropdown, intervals, notAvailable);
+
+        if (notAvailable) {
+            appendTimes(timesDropdown, intervals, notAvailable);
+        } else {
+            appendTimes(timesDropdown, intervals, notAvailable);
+        }
+        
     }
 
     function createHalfHourIntervals() {
@@ -47,7 +52,7 @@ $(document).ready(() => {
 
             intervals.push(moment({ hour: index }).format('H:mm'));
             intervals.push(moment({ hour: index, minute: 30 }).format('H:mm'));
-        })
+        });
 
         let sortedIntervals = intervals.sort((a, b) => b.date - a.date);
 
@@ -114,8 +119,8 @@ $(document).ready(() => {
 
     function addAppointment(target) {
 
-        counter++;
-        let appointmentHTML = '<li><div class="appointment-container" id="appointment' + counter + '"><span id="closeIcon"><i class="fas fa-times fa-2x pointer"></i></span><h1>Termin #' + counter + '</h1><div class="time-container"><div class="time-item" id="year' + counter + '"><h4>Godina</h4><select id="time-years"></select></div><div class="time-item" id="month' + counter + '"><h4>Mjesec</h4><select id="time-months"><option value="01">1</option><option value="02">2</option><option value="03">3</option><option value="04">4</option><option value="05">5</option><option value="06">6</option><option value="07">7</option><option value="08">8</option><option value="09">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div><div class="time-item" id="day' + counter + '"><h4 style="margin-left: -5px;">Dan</h4><select id="time-days"></select><span id="colon">:</span></div><div class="time-item" id="start' + counter + '" style="margin-left: -3px;"><h4>Početak</h4><select id="time-start"></select></div><div class="time-item" id="end' + counter + '"><h4>Završetak</h4><select id="time-end"></select></div></div></li>';
+        counter = target.index() + 1;
+        let appointmentHTML = '<li><div class="appointment-container" id="appointment' + counter + '"><span id="closeIcon"><i class="fas fa-times fa-2x pointer"></i></span><h1>Termin #<span class="number">' + counter + '</span></h1><div class="time-container"><div class="time-item" id="year' + counter + '"><h4>Godina</h4><select id="time-years"></select></div><div class="time-item" id="month' + counter + '"><h4>Mjesec</h4><select id="time-months"><option value="01">1</option><option value="02">2</option><option value="03">3</option><option value="04">4</option><option value="05">5</option><option value="06">6</option><option value="07">7</option><option value="08">8</option><option value="09">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div><div class="time-item" id="day' + counter + '"><h4 style="margin-left: -5px;">Dan</h4><select id="time-days"></select><span id="colon">:</span></div><div class="time-item" id="start' + counter + '" style="margin-left: -3px;"><h4>Početak</h4><select id="time-start"></select></div><div class="time-item" id="end' + counter + '"><h4>Završetak</h4><select id="time-end"></select></div></div></li>';
 
         target.before(appointmentHTML);
 
@@ -128,16 +133,28 @@ $(document).ready(() => {
     function removeAppointment(target) {
 
         target.remove();
+
+        $('#appointments').find(".appointment-container h1").each( (i, v) => {
+            $(v).find(".number").html(i + 1);
+        });
+
         $("#appointments li:empty").remove();
-        counter--;
     }
 
     $("#addMore").on('click', (event) => {
 
-        let target = $(event.target).parent().parent();
+        let target = $(event.target).parent();
 
         addAppointment(target);
     });
+
+    $(document).on('click', '#closeIcon', () => {
+
+        let target = $(event.target).parent().parent();
+
+        removeAppointment(target);
+    });
+
 
     $(document).on('change', '#time-months', () => {
 
@@ -173,12 +190,7 @@ $(document).ready(() => {
         getFile(jsonDate.toString()).then(data => getTimes(data, start));
     });
 
-    $(document).on('click', '#closeIcon', () => {
 
-        let target = $(event.target).parent().parent();
-
-        removeAppointment(target);
-    });
 
 });
 
