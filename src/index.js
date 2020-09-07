@@ -1,8 +1,11 @@
 "use strict";
 
 import '../src/index.scss';
+import { create } from 'underscore';
 
-$(document).ready( () => {
+const moment = require('moment');
+
+$(document).ready(() => {
 
     let counter = 1;
     let dropdownYears = $("#year1 #time-years");
@@ -18,14 +21,38 @@ $(document).ready( () => {
         try {
             let path = "../json/" + file + ".json";
             let response = await fetch(path);
-            let data = response.json();
-            console.log(data);
+            let data = response.json().then(data => ({
+                data: data
+            }));
+            // console.log(data);
             return data;
-        } catch(error) {
+        } catch (error) {
             console.log(error);
         }
     }
 
+    function getTimes(data, timesDropdown) {
+
+        let notAvailable = data.data.data["12.02.2020"];
+        let intervals = createHalfHourIntervals();
+
+        clearOptions(timesDropdown);
+        appendTimes(timesDropdown, intervals, notAvailable);
+    }
+
+    function createHalfHourIntervals() {
+
+        let intervals = [];
+        new Array(24).fill().forEach((acc, index) => {
+
+            intervals.push(moment({ hour: index }).format('H:mm'));
+            intervals.push(moment({ hour: index, minute: 30 }).format('H:mm'));
+        })
+
+        let sortedIntervals = intervals.sort((a, b) => b.date - a.date);
+
+        return sortedIntervals;
+    }
 
 
     function daysInMonth(month, year) {
@@ -44,7 +71,27 @@ $(document).ready( () => {
     function appendOptions(selectElement, start, end) {
 
         for (let i = start; i <= end; i++) {
-            selectElement.append("<option value="+ i +">"+ i +"</option>");
+            selectElement.append("<option value=" + i + ">" + i + "</option>");
+        }
+    }
+
+    function appendTimes(selectElement, array, notAvailable) {
+
+        let newArray = [];
+
+        for (let a in notAvailable) {
+
+            newArray.push(notAvailable[a]);
+        }
+
+        for (let i = 0; i < array.length; i++) {
+
+            if (newArray[0].indexOf(array[i]) > -1) {
+                selectElement.append("<option disabled value=" + array[i] + ">" + array[i] + " - ZAUZETO</option>");
+            } else {
+                selectElement.append("<option value=" + array[i] + ">" + array[i] + "</option>");
+            }
+            
         }
     }
 
@@ -53,9 +100,9 @@ $(document).ready( () => {
         for (let i = start; i <= end; i++) {
 
             if (i == currentYear) {
-                selectElement.append("<option selected value="+ i +">"+ i +"</option>");
+                selectElement.append("<option selected value=" + i + ">" + i + "</option>");
             } else {
-                selectElement.append("<option value="+ i +">"+ i +"</option>");
+                selectElement.append("<option value=" + i + ">" + i + "</option>");
             }
         }
     }
@@ -68,7 +115,7 @@ $(document).ready( () => {
     function addAppointment(target) {
 
         counter++;
-        let appointmentHTML = '<li><div class="appointment-container" id="appointment'+ counter +'"><span id="closeIcon"><i class="fas fa-times fa-2x pointer"></i></span><h1>Termin #'+ counter +'</h1><div class="time-container"><div class="time-item" id="year'+ counter +'"><h4>Godina</h4><select id="time-years"></select></div><div class="time-item" id="month'+ counter +'"><h4>Mjesec</h4><select id="time-months"><option value="01">1</option><option value="02">2</option><option value="03">3</option><option value="04">4</option><option value="05">5</option><option value="06">6</option><option value="07">7</option><option value="08">8</option><option value="09">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div><div class="time-item" id="day'+ counter +'"><h4 style="margin-left: -5px;">Dan</h4><select id="time-days"></select><span id="colon">:</span></div><div class="time-item" id="start'+ counter +'" style="margin-left: -3px;"><h4>Početak</h4><select id="time-start"></select></div><div class="time-item" id="end'+ counter +'"><h4>Završetak</h4><select id="time-end"></select></div></div></li>';
+        let appointmentHTML = '<li><div class="appointment-container" id="appointment' + counter + '"><span id="closeIcon"><i class="fas fa-times fa-2x pointer"></i></span><h1>Termin #' + counter + '</h1><div class="time-container"><div class="time-item" id="year' + counter + '"><h4>Godina</h4><select id="time-years"></select></div><div class="time-item" id="month' + counter + '"><h4>Mjesec</h4><select id="time-months"><option value="01">1</option><option value="02">2</option><option value="03">3</option><option value="04">4</option><option value="05">5</option><option value="06">6</option><option value="07">7</option><option value="08">8</option><option value="09">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div><div class="time-item" id="day' + counter + '"><h4 style="margin-left: -5px;">Dan</h4><select id="time-days"></select><span id="colon">:</span></div><div class="time-item" id="start' + counter + '" style="margin-left: -3px;"><h4>Početak</h4><select id="time-start"></select></div><div class="time-item" id="end' + counter + '"><h4>Završetak</h4><select id="time-end"></select></div></div></li>';
 
         target.before(appointmentHTML);
 
@@ -118,12 +165,12 @@ $(document).ready( () => {
         }
         let month = $(event.target).parent().prev().find("#time-months").val();
         let year = $(event.target).parent().prev().prev().find("#time-years").val();
+        let start = $(event.target).parent().next().find("#time-start");
+        let end = $(event.target).parent().next().next().find("#time-end");
 
         let jsonDate = year + "-" + month + "-" + day;
 
-        console.log(jsonDate.toString());
-
-        getFile(jsonDate.toString());
+        getFile(jsonDate.toString()).then(data => getTimes(data, start));
     });
 
     $(document).on('click', '#closeIcon', () => {
