@@ -40,8 +40,5 @@ module.exports = {
         new MomentLocalesPlugin({
             localesToKeep: ['hr']
         })
-    ],
-    externals: {
-        fs: require('fs')
-    }
+    ]
 };

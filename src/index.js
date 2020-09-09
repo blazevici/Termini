@@ -4,7 +4,6 @@ import '../src/index.scss';
 import { create } from 'underscore';
 
 const moment = require('moment');
-const fs = require('fs');
 
 $(document).ready( () => {
 
@@ -43,14 +42,6 @@ $(document).ready( () => {
         }
     }
 
-    function writeFile(fileName) {
-
-        fs.writeFile('json/'+ fileName +'.txt', ' This is my text.', (err) => {
-            if (err) throw err;
-            console.log('Updated!');
-        });
-    }
-
 
     function getTimes(data, timesDropdown) {
 
@@ -71,15 +62,23 @@ $(document).ready( () => {
     function getEndTimes(data, startTime, endTime) {
 
         let intervals = createHalfHourIntervals();
-        let slicedIntervals = intervals.slice(intervals.indexOf(startTime) + 1);
+        let slicedIntervals;
         clearOptions(endTime);
 
         if (data == "prazno") {
-
+        
+            slicedIntervals = intervals.slice(intervals.indexOf(startTime) + 1);
             appendAllTimes(endTime, slicedIntervals);
         } else {
 
             let notAvailable = data.data.data["12.02.2020"];
+
+            if (intervals.indexOf(startTime) < intervals.indexOf(notAvailable[0][0])) {
+                slicedIntervals = intervals.slice(intervals.indexOf(startTime) + 1, intervals.indexOf(notAvailable[0][0]));
+            } else {
+                slicedIntervals = intervals.slice(intervals.indexOf(startTime) + 1);
+            }
+
             appendTimes(endTime, slicedIntervals, notAvailable);
         }
     }
@@ -247,7 +246,11 @@ $(document).ready( () => {
 
         clearOptions(end);
 
-        getFile(jsonDate.toString()).then(data => getTimes(data, start));
+        getFile(jsonDate.toString()).then(data => {
+            getTimes(data, start);
+            getEndTimes(data, start, end);
+        });
+        
     });
 
     $(document).on('change', "#time-start", () => {
@@ -265,23 +268,6 @@ $(document).ready( () => {
 
         getFile(jsonDate.toString()).then(data => getEndTimes(data, start, end));
     });
-
-    $(document).on('change', "#time-end", () => {
-
-        let day = $(event.target).parent().prev().prev().find("#time-days").val();
-        if (day < 10) {
-            day = "0" + day;
-        }
-        let month = $(event.target).parent().prev().prev().prev().find("#time-months").val();
-        let year = $(event.target).parent().prev().prev().prev().prev().find("#time-years").val();
-        let start = $(event.target).parent().prev().find("#time-start").val();
-        let end = $(event.target).val();
-
-        let jsonDate = year + "-" + month + "-" + day;
-
-        writeFile(jsonDate.toString());
-    });
-
 
 
 });
