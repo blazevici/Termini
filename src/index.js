@@ -4,46 +4,86 @@ import '../src/index.scss';
 import { create } from 'underscore';
 
 const moment = require('moment');
+const fs = require('fs');
 
-$(document).ready(() => {
+$(document).ready( () => {
 
     let counter;
+    let data = "prazno";
     let dropdownYears = $("#year1 #time-years");
     let dropdownDays = $("#day1 #time-days");
+    let dropdownStart = $("#start1 #time-start");
     const currentYear = (new Date()).getFullYear();
 
     appendYears(dropdownYears, 2000, currentYear);
     getDays(1, currentYear, dropdownDays);
+    getTimes(data, dropdownStart);
 
     async function getFile(file) {
 
         try {
             let path = "../json/" + file + ".json";
             let response = await fetch(path);
-            let data = response.json().then(data => ({
-                data: data
-            }));
-            // console.log(data);
-            return data;
+            let data;
+
+            if (response.status == 404) {
+                
+                data = "prazno";
+                return data;
+            } else {
+
+                data = response.json().then(data => ({
+                    data: data
+                }));
+
+                return data;
+            }
         } catch (error) {
             console.log(error);
         }
     }
 
+    function writeFile(fileName) {
+
+        fs.writeFile('json/'+ fileName +'.txt', ' This is my text.', (err) => {
+            if (err) throw err;
+            console.log('Updated!');
+        });
+    }
+
+
     function getTimes(data, timesDropdown) {
 
-        let notAvailable = data.data.data["12.02.2020"];
         let intervals = createHalfHourIntervals();
-
         clearOptions(timesDropdown);
 
-        if (notAvailable) {
-            appendTimes(timesDropdown, intervals, notAvailable);
+        if (data == "prazno") {
+            
+            appendAllTimes(timesDropdown, intervals);
         } else {
+
+            let notAvailable = data.data.data["12.02.2020"];
             appendTimes(timesDropdown, intervals, notAvailable);
         }
-        
     }
+
+
+    function getEndTimes(data, startTime, endTime) {
+
+        let intervals = createHalfHourIntervals();
+        let slicedIntervals = intervals.slice(intervals.indexOf(startTime) + 1);
+        clearOptions(endTime);
+
+        if (data == "prazno") {
+
+            appendAllTimes(endTime, slicedIntervals);
+        } else {
+
+            let notAvailable = data.data.data["12.02.2020"];
+            appendTimes(endTime, slicedIntervals, notAvailable);
+        }
+    }
+
 
     function createHalfHourIntervals() {
 
@@ -65,6 +105,7 @@ $(document).ready(() => {
         return new Date(year, month, 0).getDate();
     }
 
+
     function getDays(month, year, dropdown) {
 
         let days = daysInMonth(month, year);
@@ -73,12 +114,14 @@ $(document).ready(() => {
         appendOptions(dropdown, 1, days);
     }
 
+
     function appendOptions(selectElement, start, end) {
 
         for (let i = start; i <= end; i++) {
             selectElement.append("<option value=" + i + ">" + i + "</option>");
         }
     }
+
 
     function appendTimes(selectElement, array, notAvailable) {
 
@@ -100,6 +143,15 @@ $(document).ready(() => {
         }
     }
 
+
+    function appendAllTimes(selectElement, array) {
+
+        for (let i = 0; i < array.length; i++) {
+            selectElement.append("<option value=" + array[i] + ">" + array[i] + "</option>");
+        }
+    }
+
+
     function appendYears(selectElement, start, end) {
 
         for (let i = start; i <= end; i++) {
@@ -112,10 +164,11 @@ $(document).ready(() => {
         }
     }
 
-    function clearOptions(selectElement) {
 
+    function clearOptions(selectElement) {
         selectElement.empty();
     }
+
 
     function addAppointment(target) {
 
@@ -126,9 +179,13 @@ $(document).ready(() => {
 
         let yearsDropdown = $("#year" + counter + " #time-years");
         let daysDropdown = $("#day" + counter + " #time-days");
+        let startDropdown = $("#start" + counter + " #time-start");
+        let data = "prazno";
         appendYears(yearsDropdown, 2000, currentYear);
         getDays(1, 2020, daysDropdown);
+        getTimes(data, startDropdown);
     }
+
 
     function removeAppointment(target) {
 
@@ -140,6 +197,7 @@ $(document).ready(() => {
 
         $("#appointments li:empty").remove();
     }
+
 
     $("#addMore").on('click', (event) => {
 
@@ -187,7 +245,41 @@ $(document).ready(() => {
 
         let jsonDate = year + "-" + month + "-" + day;
 
+        clearOptions(end);
+
         getFile(jsonDate.toString()).then(data => getTimes(data, start));
+    });
+
+    $(document).on('change', "#time-start", () => {
+
+        let day = $(event.target).parent().prev().find("#time-days").val();
+        if (day < 10) {
+            day = "0" + day;
+        }
+        let month = $(event.target).parent().prev().prev().find("#time-months").val();
+        let year = $(event.target).parent().prev().prev().prev().find("#time-years").val();
+        let start = $(event.target).val();
+        let end = $(event.target).parent().next().find("#time-end");
+
+        let jsonDate = year + "-" + month + "-" + day;
+
+        getFile(jsonDate.toString()).then(data => getEndTimes(data, start, end));
+    });
+
+    $(document).on('change', "#time-end", () => {
+
+        let day = $(event.target).parent().prev().prev().find("#time-days").val();
+        if (day < 10) {
+            day = "0" + day;
+        }
+        let month = $(event.target).parent().prev().prev().prev().find("#time-months").val();
+        let year = $(event.target).parent().prev().prev().prev().prev().find("#time-years").val();
+        let start = $(event.target).parent().prev().find("#time-start").val();
+        let end = $(event.target).val();
+
+        let jsonDate = year + "-" + month + "-" + day;
+
+        writeFile(jsonDate.toString());
     });
 
 
